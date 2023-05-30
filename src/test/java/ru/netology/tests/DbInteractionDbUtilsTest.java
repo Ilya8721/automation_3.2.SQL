@@ -43,7 +43,7 @@ public class DbInteractionDbUtilsTest {
         var verificationPage = loginPage.validLogin(authInfo);
 
         var idSQL = "SELECT id FROM users WHERE login = ?;";
-        var authCodeSQL = "SELECT code FROM auth_codes WHERE user_id = ?;";
+        var authCodeSQL = "SELECT code FROM auth_codes WHERE user_id = ? ORDER BY created DESC LIMIT 1;";
         var runner = new QueryRunner();
         try (
                 var conn = DriverManager.getConnection(
@@ -70,7 +70,7 @@ public class DbInteractionDbUtilsTest {
             var authInfo = DataHelper.getAuthInfo1();
             var verificationPage = loginPage.validLogin(authInfo);
             var idSQL = "SELECT id FROM users WHERE login = ?;";
-            var authCodeSQL = "SELECT code FROM auth_codes WHERE user_id = ?;";
+            var authCodeSQL = "SELECT code FROM auth_codes WHERE user_id = ? ORDER BY created DESC LIMIT 1;";
             var runner = new QueryRunner();
             try (
                     var conn = DriverManager.getConnection(
@@ -81,7 +81,9 @@ public class DbInteractionDbUtilsTest {
                 var codeObject = runner.query(conn, authCodeSQL, new ScalarHandler<>(), id);
                 code = codeObject.toString();
             }
-            if (count == 4) {
+            if (count < 4) {
+                verificationPage.validVerify(code);
+            } else if (count == 4) {
                 verificationPage.shouldReturnAnErrorMessage(code);
             }
         }

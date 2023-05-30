@@ -18,4 +18,9 @@ public class DataHelper {
     public static AuthInfo getAuthInfo2() {
         return new AuthInfo("petya", "123qwerty");
     }
+
+    @Value
+    public static class VerificationCode {
+        String code;
+    }
 }
